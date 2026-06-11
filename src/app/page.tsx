@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 type Message = { role: "user" | "assistant"; text: string };
 
@@ -186,34 +188,54 @@ export default function Home() {
               >
                 {m.role === "assistant" && (
                   <div className="h-7 w-7 rounded-full bg-[#8b1538] flex items-center justify-center text-white text-xs font-bold mr-2 mt-0.5 shrink-0">
-                    BH
+                    A
                   </div>
                 )}
                 <div
-                  className={`rounded-2xl px-4 py-2.5 text-sm max-w-[80%] leading-relaxed whitespace-pre-wrap ${
+                  className={`rounded-2xl px-4 py-2.5 text-sm max-w-[80%] leading-relaxed ${
                     m.role === "user"
                       ? "bg-[#8b1538] text-white rounded-br-sm"
                       : "bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 rounded-bl-sm"
                   }`}
                 >
-                  {m.text}
+                  {m.role === "assistant" && m.text === "" && loading ? (
+                    <div className="flex gap-1.5 items-center">
+                      <span className="h-2 w-2 rounded-full bg-zinc-400 animate-bounce [animation-delay:0ms]" />
+                      <span className="h-2 w-2 rounded-full bg-zinc-400 animate-bounce [animation-delay:150ms]" />
+                      <span className="h-2 w-2 rounded-full bg-zinc-400 animate-bounce [animation-delay:300ms]" />
+                    </div>
+                  ) : m.role === "assistant" ? (
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      components={{
+                        a: ({ node, ...props }) => (
+                          <a {...props} className="text-blue-600 dark:text-blue-400 hover:underline" />
+                        ),
+                        strong: ({ node, ...props }) => (
+                          <strong {...props} className="font-bold" />
+                        ),
+                        em: ({ node, ...props }) => (
+                          <em {...props} className="italic" />
+                        ),
+                        ul: ({ node, ...props }) => (
+                          <ul {...props} className="list-disc list-inside my-2" />
+                        ),
+                        ol: ({ node, ...props }) => (
+                          <ol {...props} className="list-decimal list-inside my-2" />
+                        ),
+                        li: ({ node, ...props }) => (
+                          <li {...props} className="my-1" />
+                        ),
+                      }}
+                    >
+                      {m.text}
+                    </ReactMarkdown>
+                  ) : (
+                    <div className="whitespace-pre-wrap">{m.text}</div>
+                  )}
                 </div>
               </div>
             ))}
-
-            {/* Loading indicator */}
-            {loading && (
-              <div className="flex justify-start items-center gap-2">
-                <div className="h-7 w-7 rounded-full bg-[#8b1538] flex items-center justify-center text-white text-xs font-bold mr-2 shrink-0">
-                  A
-                </div>
-                <div className="bg-zinc-100 dark:bg-zinc-800 rounded-2xl rounded-bl-sm px-4 py-3 flex gap-1.5 items-center">
-                  <span className="h-2 w-2 rounded-full bg-zinc-400 animate-bounce [animation-delay:0ms]" />
-                  <span className="h-2 w-2 rounded-full bg-zinc-400 animate-bounce [animation-delay:150ms]" />
-                  <span className="h-2 w-2 rounded-full bg-zinc-400 animate-bounce [animation-delay:300ms]" />
-                </div>
-              </div>
-            )}
 
             <div ref={messagesEndRef} />
           </div>

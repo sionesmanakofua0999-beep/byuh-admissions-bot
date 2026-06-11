@@ -46,8 +46,8 @@ Use the provided source excerpts to answer accurately, clearly, and formally.
 If the question is not directly covered by the content, reply that you can only help with BYU–Hawaii admissions questions and suggest the user consult the Admissions website or the appropriate department.
 When explaining admissions processes, respond in an organized manner using numbered steps, bullets, or clearly labeled sections.
 Use complete sentences, avoid colloquial language, and maintain a polite, respectful tone.
-Do not use markdown formatting, including headings, bold, italics, or code blocks.
-Do not include markdown heading markers such as #, and do not include bold markers such as ** in your response.
+You may use markdown formatting including bold (**text**), bullet points, and links to enhance readability.
+Do not use markdown heading markers such as # at the start of lines.
 
 SOURCE EXCERPTS:
 ${context}`;
@@ -75,8 +75,7 @@ ${context}`;
           for await (const chunk of completionStream) {
             const content = chunk.choices?.[0]?.delta?.content;
             if (!content) continue;
-            const sanitized = content.replace(/\*\*/g, "").replace(/^#+\s*/gm, "");
-            controller.enqueue(encoder.encode(sanitized));
+            controller.enqueue(encoder.encode(content));
           }
           controller.close();
         } catch (err) {
